@@ -1,11 +1,17 @@
 import styles from './App.module.scss';
 import mask1 from './images/mask1';
+import mask2 from './images/mask2';
+import mask3 from './images/mask3';
 import { cx, css } from '@emotion/css';
 
 function App() {
+
+  // const currentMaskIndex = 3;
+  // const currentMask = currentMaskIndex === 3 ? mask1 : mask2;
+
   return (
     <div className={styles.images}>
-      {mask1.map((image, index) => {
+      {mask2.map((image, index) => {
         
         const imageStyles = {
           WebkitMaskImage: `url(${image.file})`,
