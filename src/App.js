@@ -1,51 +1,104 @@
+import { useEffect, useState } from 'react';
 import styles from './App.module.scss';
+import { cx } from '@emotion/css';
+// import useMediaAnalyzer from './audioAnalyzer';
+
 import mask1 from './images/mask1';
 import mask2 from './images/mask2';
 import mask3 from './images/mask3';
-import { cx, css } from '@emotion/css';
+import mask4 from './images/mask4';
 
 function App() {
 
-  // const currentMaskIndex = 3;
-  // const currentMask = currentMaskIndex === 3 ? mask1 : mask2;
+  const [currentMaskId, setCurrentMaskId] = useState(1);
+  const masks = [mask1, mask2, mask3, mask4];
+
+  // const mediaAnalyzer = useMediaAnalyzer();
+  // mediaAnalyzer.setRunning(true);
+  // console.log(mediaAnalyzer);
+
+  const handleMaskChange = (newId) => {
+    setCurrentMaskId(newId + 1);
+  }
+
+  useEffect(() => {
+
+  }, [])
+
+  const handleKeyPress = (event) => {
+    console.log(event);
+  }
 
   return (
-    <div className={styles.images}>
-      {mask2.map((image, index) => {
-        
-        const imageStyles = {
-          WebkitMaskImage: `url(${image.file})`,
-          animationDuration: `${15}s`,
-          animationDelay: `-${Math.random() * 10}s`
-        }
+    <div className={styles.Root} onKeyUp={handleKeyPress}>
+      <div className={styles.controls}>
+        <div className={styles.controlsGroup}>
+          {masks.map((m, i) => (
+            <button
+              key={`btn-${i}`}
+              type="button"
+              className={cx(styles.controlButton, {
+                [styles.active]: currentMaskId === i + 1
+              })}
+              onClick={() => handleMaskChange(i)}
+            >
+              Mask {i + 1}
+            </button>
+          ))}
+        </div>
+      </div>
 
-        return (
-          <div
-            id={`layer_${index}`}
-            key={image.file}
-            className={cx(
-              styles.imageWrapper,
-              {
-                [styles.spin] : image.spin,
-                [styles.hidden] : image.hidden
-              }
-            )}
-          >
+      <div className={styles.images}>
+        {masks[currentMaskId - 1].map((image, index) => {
+
+          const imageStyles = {
+            WebkitMaskImage: `url(${image.file})`,
+            animationDuration: `${Math.random() * 5 + 5}s`,
+            animationDelay: `-${Math.random() * 5}s`
+          }
+
+          return (
             <div
-              className={styles.image}
-              style={imageStyles}
+              key={Math.random()}
+              className={cx(
+                styles.imageRoot,
+              )}
             >
               <div
-                className={styles.ring}
+                id={`layer_${index + 1}`}
+                className={cx(
+                  styles.imageWrapper,
+                  {
+                    [styles.spin]: image.spin,
+                    [styles.hidden]: image.hidden
+                  }
+                )}
                 style={{
-                  animationDuration: `${15}s`,
-                  animationDelay: `-${index * 2500}ms`
+                  animationDuration: `${Math.random() * 25 + 15}s`
                 }}
-              />
+              >
+                <div
+                  data-original={image.original}
+                  className={cx(styles.image)}
+                  style={imageStyles}
+                >
+                  {image.original ? (
+                    <img src={image.file} />
+                  ) : (
+                    <div
+                      className={styles.ring}
+                      style={{
+                        animationDuration: `${15}s`,
+                        animationDelay: `-${index * 2500}ms`
+                      }}
+                    />
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
-        )
-      })}
+          )
+        })}
+      </div>
     </div>
   );
 }

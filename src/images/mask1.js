@@ -1,6 +1,7 @@
 const layers = [];
 const layerCount = 26;
-const hiddenLayers = [1,2,3,7,12,16,19,20,21];
+const hiddenLayers = [1,2,3,7,12,19,20,21];
+const originalLayers = [16];
 const spinLayers = [1,2,3,4,5,6];
 
 for(let i = 1; i <= layerCount; i++){
@@ -8,6 +9,7 @@ for(let i = 1; i <= layerCount; i++){
     file: require(`./mask1/mask1-${i}.png`),
     hidden: hiddenLayers.includes(i),
     spin: spinLayers.includes(i),
+    original: originalLayers.includes(i),
   })
 }
 
