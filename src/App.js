@@ -7,11 +7,12 @@ import mask1 from './images/mask1';
 import mask2 from './images/mask2';
 import mask3 from './images/mask3';
 import mask4 from './images/mask4';
+import mask5 from './images/mask5';
 
 function App() {
 
   const [currentMaskId, setCurrentMaskId] = useState(1);
-  const masks = [mask1, mask2, mask3, mask4];
+  const masks = [mask1, mask2, mask3, mask4, mask5];
 
   // const mediaAnalyzer = useMediaAnalyzer();
   // mediaAnalyzer.setRunning(true);
