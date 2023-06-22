@@ -12,16 +12,16 @@ import mask6 from './images/mask6';
 
 function App() {
 
-  const [currentMaskId, setCurrentMaskId] = useState(1);
-  const masks = [mask6];
-  // const masks = [mask1, mask2, mask3, mask4, mask5, mask6];
+  const [currentMaskId, setCurrentMaskId] = useState(0);
+  // const masks = [mask6];
+  const masks = [mask1, mask2, mask3, mask4, mask5, mask6];
 
   // const mediaAnalyzer = useMediaAnalyzer();
   // mediaAnalyzer.setRunning(true);
   // console.log(mediaAnalyzer);
 
   const handleMaskChange = (newId) => {
-    setCurrentMaskId(newId + 1);
+    setCurrentMaskId(newId);
   }
 
   useEffect(() => {
@@ -41,7 +41,7 @@ function App() {
               key={`btn-${i}`}
               type="button"
               className={cx(styles.controlButton, {
-                [styles.active]: currentMaskId === i + 1
+                [styles.active]: currentMaskId === i
               })}
               onClick={() => handleMaskChange(i)}
             >
@@ -52,12 +52,13 @@ function App() {
       </div>
 
       <div className={styles.images}>
-        {masks[currentMaskId - 1].map((image, index) => {
+        {masks[currentMaskId].map((image, index) => {
 
           const imageStyles = {
-            WebkitMaskImage: `url(${image.file})`,
-            animationDuration: `${Math.random() * 5 + 5}s`,
-            animationDelay: `-${Math.random() * 5}s`
+            backgroundImage: image.original ? `url(${image.file})` : null,
+            WebkitMaskImage: image.original ? null : `url(${image.file})`,
+            animationDuration: `${Math.random() * 2 + 3}s`,
+            animationDelay: `-${Math.random() * 3}s`
           }
 
           return (
@@ -68,7 +69,7 @@ function App() {
               )}
             >
               <div
-                id={`layer_${index + 1}`}
+                id={`layer_${index}`}
                 className={cx(
                   styles.imageWrapper,
                   {
@@ -85,14 +86,12 @@ function App() {
                   className={cx(styles.image)}
                   style={imageStyles}
                 >
-                  {image.original ? (
-                    <img src={image.file} />
-                  ) : (
+                  {!image.original && (
                     <div
                       className={styles.ring}
                       style={{
-                        animationDuration: `${15}s`,
-                        animationDelay: `-${index * 2500}ms`
+                        animationDuration: `${10}s`,
+                        animationDelay: `-${index * 1500}ms`
                       }}
                     />
                   )}

@@ -27,11 +27,12 @@
 }
 
 .images {
-  height: 80%;
+  height: 100%;
+  scale: 1;
   aspect-ratio: 1;
   position: relative;
-  top: 10%;
   margin: 0 auto;
+  // border: solid 1px red;
 }
 
 .imageRoot {
@@ -56,6 +57,7 @@
   position: absolute;
   inset: 0;
   mask-size: contain;
+  background-size: contain;
   animation: rotateHue ease-in-out infinite;
 
   img {
@@ -65,6 +67,7 @@
 }
 
 .ring {
+  // display: none;
   position: absolute;
   inset: 0;
   background: radial-gradient(
@@ -74,10 +77,10 @@
   );
   animation: pulse ease-in-out infinite;
   // border-radius: 50%;
-  rotate: 45deg;
+  // rotate: 45deg;
   // translate: -5px 0;
   // filter: blur(25px);
-  border-radius: 25%;
+  border-radius: 50%;
 }
 
 @keyframes rotateHue {
@@ -88,8 +91,8 @@
     filter: hue-rotate(0);
   }
   0%, 100% {
-    // scale: .9;
-    opacity: 0;
+    scale: .95;
+    opacity: 1;
   }
   50% {
     scale: 1;
