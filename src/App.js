@@ -12,39 +12,46 @@ import mask6 from './images/mask6';
 
 function App() {
 
-  const [currentMaskId, setCurrentMaskId] = useState(0);
-
-  // TODO: animate image layers instead of wrapper
-  let imageRefs = [];
-
   const masks = [mask1, mask2, mask3, mask4, mask5, mask6];
+  const [currentMaskId, setCurrentMaskId] = useState(0);
   const imagesRef = useRef(null);
   const volumeRef = useRef(null);
+  let layersRef = useRef([]);
+  const directions = Array.from(Array(30)).map(() => Math.random() > .5 ? -1 : 1);
 
   const handleMaskChange = (newId) => {
     setCurrentMaskId(newId);
   }
 
-  const minVol = .2;
+  const minVol = .005;
   const maxVol = 1;
+  const minScale = .4;
+  const maxScale = 1;
+  const baseScale = .4;
 
   useMicrophone(volume => {
-    let vol = volume / 70;
-    let scale = 1;
+    let vol = volume / 100;
+    let scale = baseScale + vol / 2;
 
-
+    // Min clip
     if (vol < minVol) {
-      scale = .5;
-    }
-    else if (vol >= maxVol) {
-      scale = 1;
-    } else {
-      scale = .5 + vol / 2;
+      scale = minScale;
     }
 
+    // Max clip
+    if (vol >= maxVol || scale >= maxScale) {
+      scale = maxScale;
+    }
 
-    // volumeRef.current.innerText = vol;
-    imagesRef.current.style.scale = scale;
+    volumeRef.current.innerText = vol;
+    layersRef.current.forEach((layer, index) => {
+
+      // TODO: find a way to reset the useRef array. Own comp/rerender on switch?
+      if (!layer) return;
+
+      const dir = directions[index];
+      layer.style.scale = 1 + (scale * ((index / 25) * dir));
+    });
   });
 
   const handleKeyPress = (event) => {
@@ -58,6 +65,10 @@ function App() {
     const keyPressMaskId = keyCode - 49;
     setCurrentMaskId(keyPressMaskId);
   }
+
+  // useEffect(() => {
+
+  // }, [])
 
   useEffect(() => {
     document.addEventListener('keyup', handleKeyPress);
@@ -80,7 +91,7 @@ function App() {
               })}
               onClick={() => handleMaskChange(i)}
             >
-              Mask {i + 1}
+              {i + 1}
             </button>
           ))}
         </div>
@@ -101,6 +112,7 @@ function App() {
           return (
             <div
               key={image.file}
+              ref={(ref) => (layersRef.current[index] = ref)}
               className={cx(
                 styles.imageRoot,
               )}

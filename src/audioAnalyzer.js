@@ -20,7 +20,7 @@ const useMicrophone = (getVolume) => {
       // Construct audio pipeline
       const audioCtx = new AudioContext();
       const analyser = audioCtx.createAnalyser();
-      const sampleSize = 2048;
+      const sampleSize = 512;
       analyser.fftSize = sampleSize;
       const audioSrc = audioCtx.createMediaStreamSource(stream);
       audioSrc.connect(analyser);
