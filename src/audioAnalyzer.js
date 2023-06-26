@@ -1,64 +1,54 @@
-import Meyda from 'meyda';
-import {useEffect, useState} from 'react';
+import { useEffect } from 'react';
+// import { useState, useEffect } from 'react';
 
-const getMedia = async () => {
-  try {
-    return await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: false,
-    })
-  } catch (err) {
-    console.log('Error:', err)
-  }
-}
+const useMicrophone = (getVolume) => {
 
-const useMediaAnalyser = () => {
-  const [analyser, setAnalyser] = useState(null)
-  const [running, setRunning] = useState(false)
-  const [features, setFeatures] = useState(null)
+  // const [volume, setVolume] = useState(0);
 
   useEffect(() => {
-    const audioContext = new AudioContext()
-
-    let newAnalyser
-    getMedia().then(stream => {
-      if (audioContext.state === 'closed') {
-        return
-      }
-      const source = audioContext.createMediaStreamSource(stream)
-      newAnalyser = Meyda.createMeydaAnalyzer({
-        audioContext: audioContext,
-        source: source,
-        bufferSize: 1024,
-        featureExtractors: ['amplitudeSpectrum', 'mfcc', 'rms'],
-        callback: features => {
-          console.log(features)
-          setFeatures(features)
-        },
-      })
-      setAnalyser(newAnalyser)
-    })
-    return () => {
-      if (newAnalyser) {
-        newAnalyser.stop()
-      }
-      if (audioContext) {
-        audioContext.close()
-      }
+    if (navigator.mediaDevices.getUserMedia === null) {
+      console.error('Web Media API not supported')
+      return;
     }
-  }, [])
 
-  useEffect(() => {
-    if (analyser) {
-      if (running) {
-        analyser.start()
-      } else {
-        analyser.stop()
-      }
+    const getStream = async () => {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: false,
+        audio: true,
+      });
+
+      // Construct audio pipeline
+      const audioCtx = new AudioContext();
+      const analyser = audioCtx.createAnalyser();
+      const sampleSize = 2048;
+      analyser.fftSize = sampleSize;
+      const audioSrc = audioCtx.createMediaStreamSource(stream);
+      audioSrc.connect(analyser);
+
+      // Compile data object
+      const data = new Uint8Array(analyser.frequencyBinCount);
+
+      const loopingFunction = () => {
+        analyser.getByteFrequencyData(data);
+        const peak = data.reduce((a, b) => a + b, 0) / sampleSize;
+
+        // Callback (TODO: state hook, but without the rerenders (?))
+        if (getVolume) {
+          getVolume(peak);
+        }
+
+        requestAnimationFrame(loopingFunction);
+      };
+
+      requestAnimationFrame(loopingFunction);
     }
-  }, [running, analyser])
 
-  return [running, setRunning, features]
+    getStream();
+  }, [getVolume])
+
+  // return volume;
 }
 
-export default useMediaAnalyser;
+export {
+  useMicrophone,
+}

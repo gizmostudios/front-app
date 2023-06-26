@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styles from './App.module.scss';
 import { cx } from '@emotion/css';
-// import useMediaAnalyzer from './audioAnalyzer';
+import { useMicrophone } from './audioAnalyzer';
 
 import mask1 from './images/mask1';
 import mask2 from './images/mask2';
@@ -13,27 +13,62 @@ import mask6 from './images/mask6';
 function App() {
 
   const [currentMaskId, setCurrentMaskId] = useState(0);
-  // const masks = [mask6];
-  const masks = [mask1, mask2, mask3, mask4, mask5, mask6];
 
-  // const mediaAnalyzer = useMediaAnalyzer();
-  // mediaAnalyzer.setRunning(true);
-  // console.log(mediaAnalyzer);
+  // TODO: animate image layers instead of wrapper
+  let imageRefs = [];
+
+  const masks = [mask1, mask2, mask3, mask4, mask5, mask6];
+  const imagesRef = useRef(null);
+  const volumeRef = useRef(null);
 
   const handleMaskChange = (newId) => {
     setCurrentMaskId(newId);
   }
 
-  useEffect(() => {
+  const minVol = .2;
+  const maxVol = 1;
 
-  }, [])
+  useMicrophone(volume => {
+    let vol = volume / 70;
+    let scale = 1;
+
+
+    if (vol < minVol) {
+      scale = .5;
+    }
+    else if (vol >= maxVol) {
+      scale = 1;
+    } else {
+      scale = .5 + vol / 2;
+    }
+
+
+    // volumeRef.current.innerText = vol;
+    imagesRef.current.style.scale = scale;
+  });
 
   const handleKeyPress = (event) => {
-    console.log(event);
+    const keyCode = event.keyCode;
+
+    // Out of range
+    if (keyCode < 49 || keyCode > 54) {
+      return;
+    }
+
+    const keyPressMaskId = keyCode - 49;
+    setCurrentMaskId(keyPressMaskId);
   }
 
+  useEffect(() => {
+    document.addEventListener('keyup', handleKeyPress);
+
+    return () => {
+      document.removeEventListener('keyup', handleKeyPress);
+    }
+  }, [])
+
   return (
-    <div className={styles.Root} onKeyUp={handleKeyPress}>
+    <div className={styles.Root}>
       <div className={styles.controls}>
         <div className={styles.controlsGroup}>
           {masks.map((m, i) => (
@@ -51,7 +86,9 @@ function App() {
         </div>
       </div>
 
-      <div className={styles.images}>
+      <div style={{ position: 'absolute', background: 'white' }} ref={volumeRef}></div>
+
+      <div className={styles.images} ref={imagesRef}>
         {masks[currentMaskId].map((image, index) => {
 
           const imageStyles = {
@@ -63,7 +100,7 @@ function App() {
 
           return (
             <div
-              key={Math.random()}
+              key={image.file}
               className={cx(
                 styles.imageRoot,
               )}
