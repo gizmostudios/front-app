@@ -22,15 +22,15 @@ function App() {
   const handleMaskChange = (newId) => {
     setCurrentMaskId(newId);
   }
-
-  const minVol = .005;
+  11
+  const minVol = 0;
   const maxVol = 1;
-  const minScale = .4;
+  const minScale = .2;
   const maxScale = 1;
-  const baseScale = .4;
+  const baseScale = .3;
 
   useMicrophone(volume => {
-    let vol = volume / 100;
+    let vol = volume / 40;
     let scale = baseScale + vol / 2;
 
     // Min clip
