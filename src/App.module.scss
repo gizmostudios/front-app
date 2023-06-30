@@ -41,6 +41,7 @@
 .imageRoot {
   position: absolute;
   inset: 0;
+  mix-blend-mode: difference;
 
   // transition: scale 25ms ease-out;
   
@@ -58,6 +59,10 @@
 
 .spin {
   animation: spin 60s linear infinite;
+}
+
+.spinReverse {
+  animation: spinReverse 60s linear infinite;
 }
 
 .hidden {
@@ -88,9 +93,9 @@
   );
   animation: pulse ease-in-out infinite;
   // border-radius: 50%;
-  // rotate: 45deg;
+  rotate: 45deg;
   // translate: -5px 0;
-  // filter: blur(25px);
+  // filter: blur(150px);
   border-radius: 50%;
 }
 
@@ -117,6 +122,12 @@
   }
 }
 
+@keyframes spinReverse {
+  to {
+    rotate: -1turn;
+  }
+}
+
 @keyframes pulse {
   0% {
     scale: 0
@@ -133,5 +144,6 @@
   100% {
     scale: 1;
     opacity: 0;
+    // rotate: 1turn;
   }
 }

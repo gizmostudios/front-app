@@ -1,5 +1,5 @@
 const layers = [];
-const layerCount = 4;
+const layerCount = 6;
 const hiddenLayers = [];
 const spinLayers = [2, 3, 4];
 

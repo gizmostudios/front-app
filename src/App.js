@@ -6,13 +6,21 @@ import { useMicrophone } from './audioAnalyzer';
 import mask1 from './images/mask1';
 import mask2 from './images/mask2';
 import mask3 from './images/mask3';
-import mask4 from './images/mask4';
+// import mask4 from './images/mask4';
 import mask5 from './images/mask5';
 import mask6 from './images/mask6';
 
 function App() {
 
-  const masks = [mask1, mask2, mask3, mask4, mask5, mask6];
+  const masks = [
+    mask1,
+    mask2,
+    mask3,
+    // mask4,
+    mask5,
+    mask6
+  ];
+  const [showControls, setShowControls] = useState(false);
   const [currentMaskId, setCurrentMaskId] = useState(0);
   const imagesRef = useRef(null);
   const volumeRef = useRef(null);
@@ -22,7 +30,7 @@ function App() {
   const handleMaskChange = (newId) => {
     setCurrentMaskId(newId);
   }
-  11
+
   const minVol = 0;
   const maxVol = 1;
   const minScale = .2;
@@ -43,7 +51,7 @@ function App() {
       scale = maxScale;
     }
 
-    volumeRef.current.innerText = vol;
+    // volumeRef.current.innerText = vol;
     layersRef.current.forEach((layer, index) => {
 
       // TODO: find a way to reset the useRef array. Own comp/rerender on switch?
@@ -55,21 +63,17 @@ function App() {
   });
 
   const handleKeyPress = (event) => {
-    const keyCode = event.keyCode;
+    const keyPressed = event.key;
 
-    // Out of range
-    if (keyCode < 49 || keyCode > 54) {
+    // Cancel when out of range
+    if (isNaN(keyPressed) || keyPressed < 1 || keyPressed > masks.length) {
       return;
     }
 
-    const keyPressMaskId = keyCode - 49;
-    setCurrentMaskId(keyPressMaskId);
+    handleMaskChange(keyPressed - 1);
   }
 
-  // useEffect(() => {
-
-  // }, [])
-
+  // Bind keypress events
   useEffect(() => {
     document.addEventListener('keyup', handleKeyPress);
 
@@ -80,27 +84,33 @@ function App() {
 
   return (
     <div className={styles.Root}>
-      <div className={styles.controls}>
-        <div className={styles.controlsGroup}>
-          {masks.map((m, i) => (
-            <button
-              key={`btn-${i}`}
-              type="button"
-              className={cx(styles.controlButton, {
-                [styles.active]: currentMaskId === i
-              })}
-              onClick={() => handleMaskChange(i)}
-            >
-              {i + 1}
-            </button>
-          ))}
-        </div>
-      </div>
 
-      <div style={{ position: 'absolute', background: 'white' }} ref={volumeRef}></div>
+      {/* CONTROLS */}
+      {showControls && (
+        <>
+          <div className={styles.controls}>
+            <div className={styles.controlsGroup}>
+              {masks.map((m, i) => (
+                <button
+                  key={`btn-${i}`}
+                  type="button"
+                  className={cx(styles.controlButton, {
+                    [styles.active]: currentMaskId === i
+                  })}
+                  onClick={() => handleMaskChange(i)}
+                >
+                  {i + 1}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div style={{ position: 'absolute', background: 'white' }} ref={volumeRef}></div>
+        </>
+      )}
 
+      {/* IMAGES */}
       <div className={styles.images} ref={imagesRef}>
-        {masks[currentMaskId].map((image, index) => {
+        {masks[currentMaskId] && masks[currentMaskId].map((image, index) => {
 
           const imageStyles = {
             backgroundImage: image.original ? `url(${image.file})` : null,
@@ -123,6 +133,7 @@ function App() {
                   styles.imageWrapper,
                   {
                     [styles.spin]: image.spin,
+                    [styles.spinReverse]: image.spinReverse,
                     [styles.hidden]: image.hidden
                   }
                 )}
