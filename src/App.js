@@ -32,13 +32,13 @@ function App() {
   }
 
   const minVol = 0;
-  const maxVol = 1;
-  const minScale = .2;
-  const maxScale = 1;
-  const baseScale = .3;
+  const maxVol = 5;
+  const minScale = .1;
+  const maxScale = 5;
+  const baseScale = .5;
 
   useMicrophone(volume => {
-    let vol = volume / 40;
+    let vol = volume / 10;
     let scale = baseScale + vol / 2;
 
     // Min clip
